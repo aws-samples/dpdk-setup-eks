@@ -1,0 +1,12 @@
+[Unit]
+Description=Check if Node has Joined the cluster
+DefaultDependencies=no
+After=network-online.target config-sriov.service disableNetutils.service sriov-init.service mac-missmatch.service
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /opt/node-join-detector.sh
+ 
+[Install]
+WantedBy=sysinit.target

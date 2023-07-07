@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-vpp-dpdk
+  labels:
+    mode: vpp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      mode: vpp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        mode: vpp   
+    spec:
+      {{- if .Values.userPlaneSelector}}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.userPlaneSelector.nodeLabel }}
+                operator: In
+                values:
+                - {{ .Values.userPlaneSelector.nodeValue }}
+      {{- end }}
+      initContainers:            
+      - name: dpdk-sync-aws-ip
+        image: "{{ .Values.dpdk.awsipmgmt.repository }}:{{ .Values.dpdk.awsipmgmt.version }}"
+        imagePullPolicy: {{ .Values.dpdk.awsipmgmt.pullPolicy }}
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: 200Mi
+            {{ .Values.vpp.config.netDevInterface1RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface2RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface3RecourceName }}: '1'            
+          requests:
+            cpu: "0.5"
+            memory: 200Mi
+            {{ .Values.vpp.config.netDevInterface1RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface2RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface3RecourceName }}: '1'            
+        command: ["/bin/sh", "-c"]
+        args:
+        - netDevInterface1pciAddress=$(printenv PCIDEVICE_INTEL_COM_INTEL_SRIOV_NETDEVICE_1);
+          netDevInterface2pciAddress=$(printenv PCIDEVICE_INTEL_COM_INTEL_SRIOV_NETDEVICE_2);
+          netDevInterface3pciAddress=$(printenv PCIDEVICE_INTEL_COM_INTEL_SRIOV_NETDEVICE_3);
+          echo "Aws_PCI_${netDevInterface1pciAddress}={ {{ .Values.vpp.config.netDevInterface1IP }} }" | tr -d " " >> /etc/pci-address-ip-mapping;
+          echo "Aws_PCI_${netDevInterface2pciAddress}={ {{ .Values.vpp.config.netDevInterface2IP }} }" | tr -d " " >> /etc/pci-address-ip-mapping;
+          echo "Aws_PCI_${netDevInterface3pciAddress}={ {{ .Values.vpp.config.netDevInterface3IP }} }" | tr -d " " >> /etc/pci-address-ip-mapping;
+          /root/ip-syncer.sh;                
+      containers:    
+      - name: vpp
+        imagePullPolicy: {{ .Values.vpp.nfimage.pullPolicy }}
+        image: "{{ .Values.vpp.nfimage.repository }}:{{ .Values.vpp.nfimage.version }}"
+        command: ["/bin/sh", "-c"]
+        args:
+        - cp -r /tmp/startup.conf /etc/vpp/startup.conf;
+          netDevInterface1pciAddress=$(printenv PCIDEVICE_INTEL_COM_INTEL_SRIOV_NETDEVICE_1);
+          netDevInterface2pciAddress=$(printenv PCIDEVICE_INTEL_COM_INTEL_SRIOV_NETDEVICE_2);
+          netDevInterface3pciAddress=$(printenv PCIDEVICE_INTEL_COM_INTEL_SRIOV_NETDEVICE_3);        
+          mainCore=$(cat /sys/fs/cgroup/cpuset/cpuset.cpus  | tr "," "-" |  cut -d '-' -f1);
+          workerCore=$(cat /sys/fs/cgroup/cpuset/cpuset.cpus  | tr "," "-" |  cut -d '-' -f2);
+          sed -i "s/CORE1/$mainCore/g;s/CORE2/$workerCore/g" /etc/vpp/startup.conf;
+          sed -i "s/netDevInterface1/$netDevInterface1pciAddress/g;s/netDevInterface2/$netDevInterface2pciAddress/g;s/netDevInterface3/$netDevInterface3pciAddress/g" /etc/vpp/startup.conf;       
+          /usr/bin/vpp -c /etc/vpp/startup.conf;
+        securityContext:
+            {{- toYaml .Values.vpp.securityContext | nindent 12 }}
+        volumeMounts:
+        - name: vpp-startup-conf
+          mountPath: /tmp/startup.conf
+          subPath: startup.conf
+        - name: vpp-init-conf
+          mountPath: /etc/vpp/init.conf
+          subPath: init.conf
+        resources:
+          requests:
+            cpu: "2"
+            memory: 4G          
+            hugepages-1Gi: 4Gi
+            {{ .Values.vpp.config.netDevInterface1RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface2RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface3RecourceName }}: '1'
+          limits:
+            cpu: "2"
+            memory: 4G           
+            hugepages-1Gi: 4Gi
+            {{ .Values.vpp.config.netDevInterface1RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface2RecourceName }}: '1'
+            {{ .Values.vpp.config.netDevInterface3RecourceName }}: '1'            
+      volumes:
+      - name: vpp-startup-conf
+        configMap:
+          name: {{ .Release.Name }}-vpp-dpdk-gateway-startup-conf
+      - name: vpp-init-conf
+        configMap:
+          name: {{ .Release.Name }}-vpp-dpdk-init-conf
+      - name: hugepage
+        emptyDir:
+           medium: HugePages

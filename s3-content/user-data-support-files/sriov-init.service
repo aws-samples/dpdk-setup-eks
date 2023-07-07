@@ -1,0 +1,13 @@
+[Unit]
+Description=SR-IOV AMI Initialization
+DefaultDependencies=no
+After=network-online.target
+Before=kubelet.service
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /opt/dpdk/sriov-init.sh
+ 
+[Install]
+WantedBy=sysinit.target

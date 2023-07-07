@@ -1,0 +1,12 @@
+[Unit]
+Description=Disable Netutils automation
+DefaultDependencies=no
+After=network-online.target mac-missmatch.service
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /opt/disableNetutils.sh
+ 
+[Install]
+WantedBy=sysinit.target

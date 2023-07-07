@@ -1,0 +1,13 @@
+[Unit]
+Description=SR-IOV configuration
+DefaultDependencies=no
+After=network-online.target mac-missmatch.service 
+Before=kubelet.service
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /opt/dpdk/config-sriov.sh
+ 
+[Install]
+WantedBy=sysinit.target

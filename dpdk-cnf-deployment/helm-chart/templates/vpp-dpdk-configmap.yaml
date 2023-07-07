@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-vpp-dpdk-init-conf
+data:
+  init.conf: |
+    set interface ip address net1 {{ .Values.vpp.config.netDevInterface1IP }}/{{ .Values.vpp.config.netDevInterface1netMask }}
+    set interface ip address net2 {{ .Values.vpp.config.netDevInterface2IP }}/{{ .Values.vpp.config.netDevInterface2netMask }}
+    set interface ip address net3 {{ .Values.vpp.config.netDevInterface3IP }}/{{ .Values.vpp.config.netDevInterface3netMask }}
+    set interface state net1 up
+    set interface state net2 up
+    set interface state net3 up
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-vpp-dpdk-gateway-startup-conf
+data:
+  startup.conf: |
+      unix {
+        nodaemon
+        log /tmp/vpp.log
+        full-coredump
+        gid vpp
+        interactive
+        cli-listen /run/vpp/cli.sock
+        exec /etc/vpp/init.conf
+      }
+      
+      cpu {
+        main-core CORE1
+        corelist-workers CORE2
+      }
+      api-trace {
+        on
+      }
+
+      dpdk {
+       dev netDevInterface1 {name net1}
+       dev netDevInterface2 {name net2}
+       dev netDevInterface3 {name net3}
+      }
+
+      api-segment {
+        gid vpp
+      }
+
+      plugins {
+          path /usr/lib/x86_64-linux-gnu/vpp_plugins/
+          plugin dpdk_plugin.so { enable }
+      }

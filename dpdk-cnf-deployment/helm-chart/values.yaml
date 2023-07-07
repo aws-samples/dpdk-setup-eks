@@ -1,0 +1,30 @@
+dpdk:
+  awsipmgmt:
+    repository: ECR_REPO/dpdk-aws-ipmgt
+    version: v0.1
+    pullPolicy: IfNotPresent
+
+vpp:
+    nfimage:
+      repository: ligato/vpp-base
+      version: 23.02
+      # pullPolicy: IfNotPresent or Never or Always
+      pullPolicy: IfNotPresent
+
+    securityContext:
+      privileged: true 
+
+    config:
+      netDevInterface1RecourceName: "intel.com/intel_sriov_netdevice_1"
+      netDevInterface2RecourceName: "intel.com/intel_sriov_netdevice_2"
+      netDevInterface3RecourceName: "intel.com/intel_sriov_netdevice_3"
+      netDevInterface1IP: "192.168.6.8"
+      netDevInterface2IP: "192.168.4.8"
+      netDevInterface3IP: "192.168.5.8"
+      netDevInterface1netMask: "24"
+      netDevInterface2netMask: "24"
+      netDevInterface3netMask: "24"
+
+userPlaneSelector: 
+  nodeLabel: cnf
+  nodeValue: cnf01

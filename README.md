@@ -29,14 +29,14 @@ In this option you would prepare the custom built AMI with all required patches,
 
 You can find the detailed steps that are required for creating the custom AMI at [custom-ami-build-steps](./custom-ami-prep.md)
 
-After creating the custom AMI you can proceed to deploy the cloud formation template, steps are provided at worker-node creation step.
+After creating the custom AMI you can proceed to deploy the cloud formation template that will create the worker-nodes, steps are provided at the [worker-node creation step](#create-the-worker-node-with-dpdk-interfaces).
 
 #### Option 2: On-Demand DPDK installation and Configuration
 
 In this option, you take the latest EKS Optimized Amazon Linux AMI or any other ENA driver enabled linux AMI and deploy your worker nodes. You automate all the necessary steps as mentioned in above ‘DPDK Configuration’ section with [user data](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) of your Launch template. 
 You can store your packages, patches, helper & configuration scripts in a private [Amazon S3](https://aws.amazon.com/s3/) bucket. At the time instantiation EC2 node will download these files from the S3 bucket and utilizes it for patch installation, DPDK setup, and system configuration. It also gives you flexibility to decide on number of interfaces needed to be DPDK bound and build it with the planned resource names used by your workloads via SRIOV-DP plugin.
 
-For this option, there is no need to do any prep work, all the DPDK installation processes are carried out within the cloud formation stack via the user-data script section, the cloud formation step can be found in the next section.
+For this option, there is no need to do any prep work, all the DPDK installation processes are carried out within the cloud formation stack via the user-data script section, the cloud formation step can be found at the  [worker-node creation step](#create-the-worker-node-with-dpdk-interfaces)
 
 #### Create The Worker Node With DPDK Interfaces
 

@@ -14,7 +14,7 @@ The sample CFN (CloudFormation) template that is included in the blog's git repo
 * **WokerNode Primary Interface (eth0) Subnet ID:** This is the subnet that the worker node EC2 instances will be created (this is will be used for the Kubernetes primary interface i.e. aws-vpc-cni).
 * **Multus Subnets Groups ID**: The list of multus subnets that will be used to create the DPDK interfaces.
 * **DPDK S3 Bucket:** This is where the DPDK scripts will be called during the userdata initialization. The scripts can be found at ***s3-content/user-data-support-files*** folder that is included in the git repo.
-* **Multus S3 Bucket:** This is where the zipped Multus Lambda function code will be stored, you can download it from https://github.com/aws-samples/eks-install-guide-for-multus/raw/main/cfn/templates/nodegroup/lambda_function.zip
+* **Multus S3 Bucket:** This is where the zipped Multus Lambda function code will be stored, you can download it from [eks-install-guide-for-multus repo](https://github.com/aws-samples/eks-install-guide-for-multus/raw/main/cfn/templates/nodegroup/lambda_function.zip)
 * **EKS Cluster:** The values that is required is the EKS Cluster Name.
 * **EKS Security Group:** The security group ID that was created alongside with EKS cluster.
 

@@ -7,7 +7,7 @@ To create a custom AMI, following steps are required:
 ```
 aws ssm get-parameter --name /aws/service/eks/optimized-ami/1.23/amazon-linux-2/recommended/image_id --region us-west-2 --query "Parameter.Value" --output text
 
-ami-0996383fb9a4fd26b
+ami-xxxxxxxxxxxxxxx
 ```
 
 This will give the latest version for the EKS AMI 1.23 release.
@@ -16,12 +16,12 @@ The AMI id that is given from the command can now be used to provision an EC2 in
 
 ```
 aws --region us-west-2 ec2 run-instances \
-    --image-id ami-0996383fb9a4fd26b \
+    --image-id ami-xxxxxxxxxxxxxxx \
     --count 1 \
     --instance-type t3.medium \
     --key-name local-key \
-    --security-group-ids sg-0b5078d10994b91c7 \
-    --subnet-id subnet-01dfeb4802507fa16 \
+    --security-group-ids sg-xxxxxxxxxxxxxxx \
+    --subnet-id subnet-xxxxxxxxxxxxxxx \
     --block-device-mappings "[{\"DeviceName\":\"/dev/sdf\",\"Ebs\":{\"VolumeSize\":50,\"DeleteOnTermination\":false}}]" \
     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=dpdk-image}]'
 ```
@@ -39,7 +39,7 @@ sudo yum -y install net-tools pciutils numactl-devel libhugetlbfs-utils libpcap-
 
 3.) Reboot the instance: `sudo reboot`
 
-4.) Install AWS DPDK patches
+4.) Re-connect to the EC2 instance and install AWS DPDK patches
 
 ```
 git clone https://github.com/amzn/amzn-drivers.git
@@ -54,7 +54,7 @@ cd ..
 sudo ./get-vfio-with-wc.sh
 ```
 
-5.) Download dpdk scripts (Change DPDK_S3_BUCKET_NAME to the S3 bucket that contains the dpdk scripts)
+5.) Download dpdk scripts (Change DPDK_S3_BUCKET_NAME to the S3 bucket that contains the dpdk scripts). For more details about the S3 bucket that the scripts are located, see [pre-requisite section](./README.md#pre-requisites)
 
 ```
 sudo mkdir -p /opt/dpdk/

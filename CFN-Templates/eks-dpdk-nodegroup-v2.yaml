@@ -3,11 +3,12 @@
 #// SPDX-License-Identifier: MIT-0
 # This CFN template demonstrates how to create self managed EKS nodegroup 
 # using static/DHCP ip allocation method for EKS MULTUS nodegroup
-# author: Raghvendra Singh
+# author: Raghvendra Singh, Subbarao Duggisetty, Christopher Adigun
 # -----------------------------------------------------------
-AWSTemplateFormatVersion: "2010-09-09"
+
 ###PROMPT> aws cloudformation create-stack --stack-name myteststack --template-body file:///home/testuser/mytemplate.json --parameters ParameterKey=Parm1,ParameterValue=test1 ParameterKey=Parm2,ParameterValue=test2
 
+AWSTemplateFormatVersion: "2010-09-09"
 Description: Amazon EKS - Node Group
 
 Metadata:
@@ -37,7 +38,6 @@ Metadata:
         Parameters:
           - VpcId
           - Subnets
-          # - EndpointSecurityGroup
       - Label:
           default: Multus CNI Configuration
         Parameters:
@@ -85,7 +85,7 @@ Parameters:
 
   KeyName:
     Type: "AWS::EC2::KeyPair::KeyName"
-    Description:  (Optional) The EC2 SSH Key Pair to allow SSH access to the instances
+    Description: The EC2 SSH Key Pair to allow SSH access to the instances
 
   NodeAutoScalingGroupDesiredCapacity:
     Type: Number
@@ -402,14 +402,8 @@ Parameters:
     Type: "AWS::EC2::VPC::Id"
     Description: The VPC of the worker instances
 
-  # EndpointSecurityGroup:
-  #   Type: "AWS::EC2::SecurityGroup::Id"
-  #   Default: sg-0001abdf677c8f6b2
-  #   Description: The security group that is associated with the all the VPC interface endpoints.
-
   LambdaS3Bucket:
     Type: String
-    Default: subbu-artifact-test-bucket
     Description: Specify S3 Bucket(directory) where you locate Lambda Function
 
   LambdaS3Key:
@@ -419,20 +413,23 @@ Parameters:
 
   DPDKFilesS3BucketName:
     Type: String
-    Default: subbu-artifact-test-bucket
     Description: Specify S3 Key(filename) of dpdk service files.
+
   hugepagesz:
     Type: String
     Default: "1G"
     Description: Huge Pages Size
+
   Defaulthugepagesz:
     Type: String
     Default: "1G"
     Description: Default Huge Pages Size
+
   NumOfHugePages:
     Type: Number
     Default: 8
     Description: Default Huge Pages Size
+
   SriovStartingInterface:
     Type: Number
     Default: 1
@@ -523,66 +520,7 @@ Resources:
       IpProtocol: tcp
       SourceSecurityGroupId: !Ref ClusterControlPlaneSecurityGroup
       ToPort: 443
-  # VPCEndpointSecurityGroupIngress:
-  #   Type: "AWS::EC2::SecurityGroupIngress"
-  #   DependsOn: NodeSecurityGroup
-  #   Properties:
-  #     Description: !Sub Allows ${ClusterName}-${NodeGroupName} instances to communicate with the VPC Endpoints
-  #     FromPort: -1
-  #     GroupId: !Ref EndpointSecurityGroup
-  #     IpProtocol: "-1"
-  #     SourceSecurityGroupId: !Ref NodeSecurityGroup
-  #     ToPort: -1
-  # VPCInternalCommunication1NodeSecurityGroupIngress:
-  #   Type: "AWS::EC2::SecurityGroupIngress"
-  #   DependsOn: NodeSecurityGroup
-  #   Properties:
-  #     Description: VPC Internal Communication
-  #     FromPort: -1
-  #     GroupId: !Ref NodeSecurityGroup
-  #     IpProtocol: "-1"
-  #     CidrIp: 96.104.156.0/24
-  #     ToPort: -1
-  # VPCInternalCommunication2NodeSecurityGroupIngress:
-  #   Type: "AWS::EC2::SecurityGroupIngress"
-  #   DependsOn: NodeSecurityGroup
-  #   Properties:
-  #     Description: VPC Internal Communication
-  #     FromPort: -1
-  #     GroupId: !Ref NodeSecurityGroup
-  #     IpProtocol: "-1"
-  #     CidrIp: 96.113.195.0/24
-  #     ToPort: -1
-  # VPCInternalCommunication3NodeSecurityGroupIngress:
-  #   Type: "AWS::EC2::SecurityGroupIngress"
-  #   DependsOn: NodeSecurityGroup
-  #   Properties:
-  #     Description: VPC Internal Communication
-  #     FromPort: -1
-  #     GroupId: !Ref NodeSecurityGroup
-  #     IpProtocol: "-1"
-  #     CidrIp: 96.104.154.64/26
-  #     ToPort: -1
-  # VPCInternalCommunication4NodeSecurityGroupIngress:
-  #   Type: "AWS::EC2::SecurityGroupIngress"
-  #   DependsOn: NodeSecurityGroup
-  #   Properties:
-  #     Description: VPC Internal Communication
-  #     FromPort: -1
-  #     GroupId: !Ref NodeSecurityGroup
-  #     IpProtocol: "-1"
-  #     CidrIp: 198.18.16.0/20
-  #     ToPort: -1
-  # VPCInternalCommunication5NodeSecurityGroupIngress:
-  #   Type: "AWS::EC2::SecurityGroupIngress"
-  #   DependsOn: NodeSecurityGroup
-  #   Properties:
-  #     Description: VPC Internal Communication
-  #     FromPort: -1
-  #     GroupId: !Ref NodeSecurityGroup
-  #     IpProtocol: "-1"
-  #     CidrIp: 96.104.161.128/25
-  #     ToPort: -1
+ 
   
   NodeInstanceProfileRole: 
     Type: "AWS::IAM::Role"

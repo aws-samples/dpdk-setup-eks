@@ -125,6 +125,9 @@ No 'Misc (rawdev)' devices detected
 No 'Regex' devices detected
 ===========================
 ```
+#### Sample VPP application to validate DPDK setup
+
+Please use the sample [VPP Application](./dpdk-cnf-deployment/README.md) to validate your DPDK setup. 
 
 ## Clean up 
 * Delete the private DPDK AMI from EC2 console. 

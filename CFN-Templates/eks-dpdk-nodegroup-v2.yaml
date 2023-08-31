@@ -645,7 +645,6 @@ Resources:
             sudo sed -i "s/^#CPUAffinity.*/CPUAffinity=0-3 24-27/g" /etc/systemd/system.conf
             sudo sed -i "s/^#IRQBALANCE_BANNED_CPUS=/IRQBALANCE_BANNED_CPUS=0000ffff,f0fffff0/g" /etc/sysconfig/irqbalance
 
-            #This customization of staring from interface 1 instead of 2 is because MG needs all interfaces as SRIOV
             chmod a+x /opt/dpdk/dpdk-resource-builder.py
             python3 /opt/dpdk/dpdk-resource-builder.py ${SriovStartingInterface} $subnetCount
             if [ -d "/etc/pcidp/" ]; then

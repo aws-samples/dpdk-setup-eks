@@ -2,7 +2,7 @@
 
 This repo contains sample Cloudformation templates and DPDK based CNF helm chart that can be used to automate the process of creating DPDK packet acceleration on an EKS cluster. 
 
-For more details on the implementation steps kindly check the blog post [Automate Packet Acceleration configuration using DPDK on Amazon EKS](.).
+For more details on the implementation steps kindly check the blog post [Automate Packet Acceleration configuration using DPDK on Amazon EKS](https://aws.amazon.com/blogs/industries/automate-packet-acceleration-configuration-using-dpdk-on-amazon-eks/).
 
 ***Note - You will be required to build the dpdk-aws-ipmgt container image and push to your ECR. Details on how to do this can be found in the dpdk-cnf-deployment/container-building folder.***
 

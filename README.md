@@ -18,6 +18,8 @@ The sample CFN (CloudFormation) template that is included in the blog's git repo
 * **EKS Cluster:** The values that is required is the EKS Cluster Name.
 * **EKS Security Group:** The security group ID that was created alongside with EKS cluster.
 
+Ensure that you have added the nodegroup's IAM role in the EKS cluster AWS-Auth Configmap, so nodegroup can join the EKS cluster. Refer to [AWS-Auth Configmap for NodeGroup](https://aws.amazon.com/blogs/industries/automate-packet-acceleration-configuration-using-dpdk-on-amazon-eks/) 
+
 #### Option 1: Pre-built AMI with DPDK Setup
 
 In this option you would prepare the custom built AMI with all required patches, configuration and operating system level setups. You can use the EKS Optimized Amazon Linux AMI or any other ENA driver enabled linux AMI as base AMI and create an EC2 instance. Once the node is up, you can install DPDK driver patches. After the installation & configuration steps are completed, you can prepare a new AMI from the root disk (EBS volume) and use it as an AMI for your worker nodes requiring DPDK. 

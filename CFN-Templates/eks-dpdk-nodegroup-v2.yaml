@@ -738,7 +738,7 @@ Resources:
       GroupDescription: Security Group For Multus interfaces
       VpcId: !Ref VpcId
 
-  NodeSecurityGroupIngress:
+  MultusNodeSecurityGroupIngress:
     Type: "AWS::EC2::SecurityGroupIngress"
     DependsOn: MultusSecurityGroup
     Properties:
